@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voltio — AI-support for el-sparkesykkelbutikker</title>
+    <meta name="description" content="Voltio analyserer kundehenvendelser i sanntid og gir agentene dine presise svarforslag — direkte i Zendesk.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black: #000000;
+            --black2: #0a0a0a;
+            --black3: #111111;
+            --black4: #1a1a1a;
+            --white: #ffffff;
+            --white2: rgba(255,255,255,0.85);
+            --white3: rgba(255,255,255,0.45);
+            --white4: rgba(255,255,255,0.12);
+            --white5: rgba(255,255,255,0.06);
+            --accent: #4f8fff;
+            --accent2: #a78bfa;
+            --grid: rgba(255,255,255,0.04);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter Tight', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ── GRID OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2.5rem;
+            height: 60px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--white4);
+        }
+        .nav-logo {
+            font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px;
+            color: var(--white); text-decoration: none;
+        }
+        .nav-logo span { color: var(--accent); }
+        .nav-links {
+            display: flex; gap: 2rem; list-style: none;
+        }
+        .nav-links a {
+            color: var(--white3); text-decoration: none; font-size: 0.875rem;
+            font-weight: 500; letter-spacing: 0.02em; transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--white); }
+        .nav-cta {
+            background: var(--white); color: var(--black);
+            padding: 0.5rem 1.2rem; border-radius: 6px;
+            font-size: 0.875rem; font-weight: 600; text-decoration: none;
+            letter-spacing: -0.01em; transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.85; }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+        /* radial glow */
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -20%; left: 50%; transform: translateX(-50%);
+            width: 900px; height: 600px;
+            background: radial-gradient(ellipse at center,
+                rgba(79,143,255,0.18) 0%,
+                rgba(167,139,250,0.08) 50%,
+                transparent 70%);
+            animation: glowPulse 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+        }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--white5);
+            border: 1px solid var(--white4);
+            padding: 0.35rem 0.9rem; border-radius: 100px;
+            font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em;
+            color: var(--white3); text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.8s ease both;
+        }
+        .hero-badge-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+            animation: blink 2s ease infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-title {
+            font-size: clamp(2.8rem, 8vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -0.04em;
+            max-width: 16ch;
+            animation: fadeUp 0.8s 0.1s ease both;
+        }
+        .hero-title .grad {
+            background: linear-gradient(135deg, var(--white) 30%, var(--accent) 70%, var(--accent2) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            margin-top: 1.5rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--white3);
+            max-width: 50ch;
+            font-weight: 400;
+            line-height: 1.7;
+            animation: fadeUp 0.8s 0.2s ease both;
+        }
+
+        .hero-actions {
+            margin-top: 2.5rem;
+            display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+            animation: fadeUp 0.8s 0.3s ease both;
+        }
+        .btn-primary {
+            background: var(--white); color: var(--black);
+            padding: 0.85rem 2rem; border-radius: 8px;
+            font-size: 0.95rem; font-weight: 700;
+            text-decoration: none; letter-spacing: -0.02em;
+            transition: opacity 0.2s, transform 0.2s;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-secondary {
+            background: transparent; color: var(--white2);
+            padding: 0.85rem 2rem; border-radius: 8px;
+            border: 1px solid var(--white4);
+            font-size: 0.95rem; font-weight: 600;
+            text-decoration: none; letter-spacing: -0.02em;
+            transition: border-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .btn-secondary:hover {
+            border-color: var(--white3); color: var(--white);
+            transform: translateY(-1px);
+        }
+
+        /* ── MARQUEE ── */
+        .marquee-section {
+            position: relative; z-index: 1;
+            padding: 2rem 0;
+            border-top: 1px solid var(--white4);
+            border-bottom: 1px solid var(--white4);
+            overflow: hidden;
+        }
+        .marquee-track {
+            display: flex; gap: 3rem;
+            animation: marquee 25s linear infinite;
+            white-space: nowrap;
+        }
+        .marquee-track:hover { animation-play-state: paused; }
+        .marquee-item {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em;
+            text-transform: uppercase; color: var(--white3);
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+            display: flex; align-items: center; gap: 0.8rem;
+        }
+        .marquee-item::before {
+            content: '//';
+            color: var(--accent); opacity: 0.6;
+        }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            position: relative; z-index: 1;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 1rem;
+        }
+
+        /* ── HOW IT WORKS ── */
+        .how-section {
+            padding: 7rem 2rem;
+            max-width: 1100px; margin: 0 auto;
+        }
+        .how-header {
+            text-align: center; margin-bottom: 5rem;
+        }
+        .how-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800; letter-spacing: -0.04em;
+            line-height: 1.05;
+        }
+        .how-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
+            background: var(--white4);
+            border: 1px solid var(--white4);
+            border-radius: 16px; overflow: hidden;
+        }
+        .how-card {
+            background: var(--black2);
+            padding: 2.5rem;
+            transition: background 0.3s;
+        }
+        .how-card:hover { background: var(--black3); }
+        .how-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.1em; color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        .how-card h3 {
+            font-size: 1.2rem; font-weight: 700;
+            letter-spacing: -0.03em; margin-bottom: 0.75rem;
+        }
+        .how-card p {
+            font-size: 0.9rem; color: var(--white3);
+            line-height: 1.7;
+        }
+
+        /* ── FEATURES BENTO ── */
+        .features-section {
+            padding: 7rem 2rem;
+            max-width: 1100px; margin: 0 auto;
+        }
+        .features-header {
+            text-align: center; margin-bottom: 4rem;
+        }
+        .features-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800; letter-spacing: -0.04em;
+        }
+        .bento {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto auto;
+            gap: 1.5px;
+            background: var(--white4);
+            border: 1px solid var(--white4);
+            border-radius: 16px; overflow: hidden;
+        }
+        .bento-card {
+            background: var(--black2);
+            padding: 2.5rem;
+            transition: background 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .bento-card:hover { background: var(--black3); }
+        .bento-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .bento-card:hover::before { opacity: 1; }
+
+        .bento-1 { grid-column: span 7; }
+        .bento-2 { grid-column: span 5; }
+        .bento-3 { grid-column: span 4; }
+        .bento-4 { grid-column: span 4; }
+        .bento-5 { grid-column: span 4; }
+
+        .bento-icon {
+            width: 44px; height: 44px;
+            background: var(--white5);
+            border: 1px solid var(--white4);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-bottom: 1.5rem;
+        }
+        .bento-card h3 {
+            font-size: 1.15rem; font-weight: 700;
+            letter-spacing: -0.03em; margin-bottom: 0.6rem;
+        }
+        .bento-card p {
+            font-size: 0.88rem; color: var(--white3);
+            line-height: 1.7; max-width: 42ch;
+        }
+        .bento-tag {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem; font-weight: 500;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            background: rgba(79,143,255,0.1);
+            border: 1px solid rgba(79,143,255,0.2);
+            color: var(--accent);
+            padding: 0.25rem 0.6rem; border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        /* ── PRICING ── */
+        .pricing-section {
+            padding: 7rem 2rem;
+            max-width: 1100px; margin: 0 auto;
+        }
+        .pricing-header {
+            text-align: center; margin-bottom: 4rem;
+        }
+        .pricing-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800; letter-spacing: -0.04em;
+        }
+        .pricing-sub {
+            margin-top: 1rem;
+            font-size: 1rem; color: var(--white3);
+        }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5px;
+            background: var(--white4);
+            border: 1px solid var(--white4);
+            border-radius: 16px; overflow: hidden;
+        }
+        .price-card {
+            background: var(--black2);
+            padding: 2.5rem;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .price-card:hover { background: var(--black3); }
+        .price-card.popular {
+            background: var(--black3);
+        }
+        .price-card.popular::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+        }
+        .popular-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 1.5rem;
+            display: block;
+        }
+        .price-name {
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--white3); margin-bottom: 0.5rem;
+        }
+        .price-amount {
+            font-size: 2.8rem; font-weight: 800;
+            letter-spacing: -0.05em; line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .price-period {
+            font-size: 0.85rem; color: var(--white3);
+            margin-bottom: 2rem;
+        }
+        .price-divider {
+            height: 1px; background: var(--white4); margin-bottom: 2rem;
+        }
+        .price-features {
+            list-style: none;
+            display: flex; flex-direction: column; gap: 0.7rem;
+            margin-bottom: 2.5rem;
+        }
+        .price-features li {
+            font-size: 0.875rem; color: var(--white2);
+            display: flex; align-items: flex-start; gap: 0.75rem;
+        }
+        .price-features li::before {
+            content: '→';
+            color: var(--accent); flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .price-btn {
+            display: block; width: 100%;
+            padding: 0.85rem;
+            text-align: center; text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem; font-weight: 700;
+            letter-spacing: -0.01em;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .price-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+        .price-btn-white { background: var(--white); color: var(--black); }
+        .price-btn-outline {
+            background: transparent; color: var(--white);
+            border: 1px solid var(--white4);
+        }
+        .price-btn-outline:hover { border-color: var(--white3); }
+
+        /* ── STATS ── */
+        .stats-section {
+            padding: 5rem 2rem;
+            border-top: 1px solid var(--white4);
+            border-bottom: 1px solid var(--white4);
+        }
+        .stats-grid {
+            max-width: 900px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 2rem; text-align: center;
+        }
+        .stat-num {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900; letter-spacing: -0.05em;
+            background: linear-gradient(135deg, var(--white) 40%, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label {
+            font-size: 0.8rem; color: var(--white3);
+            font-weight: 500; letter-spacing: 0.05em;
+            margin-top: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        /* ── CTA SECTION ── */
+        .cta-section {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute; bottom: -50%; left: 50%; transform: translateX(-50%);
+            width: 800px; height: 600px;
+            background: radial-gradient(ellipse at center,
+                rgba(79,143,255,0.12) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .cta-title {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900; letter-spacing: -0.05em; line-height: 1.0;
+            max-width: 16ch; margin: 0 auto 1.5rem;
+        }
+        .cta-sub {
+            font-size: 1rem; color: var(--white3);
+            max-width: 45ch; margin: 0 auto 2.5rem;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative; z-index: 1;
+            padding: 2.5rem;
+            border-top: 1px solid var(--white4);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .footer-logo {
+            font-size: 1rem; font-weight: 800;
+            color: var(--white); text-decoration: none; letter-spacing: -0.5px;
+        }
+        .footer-logo span { color: var(--accent); }
+        .footer-links {
+            display: flex; gap: 2rem; list-style: none;
+        }
+        .footer-links a {
+            font-size: 0.8rem; color: var(--white3);
+            text-decoration: none; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--white); }
+        .footer-copy {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem; color: var(--white3);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0; transform: translateY(32px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .how-grid { grid-template-columns: 1fr; }
+            .bento { grid-template-columns: 1fr; }
+            .bento-1, .bento-2, .bento-3, .bento-4, .bento-5 { grid-column: span 1; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            nav .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">Volt<span>io</span></a>
+    <ul class="nav-links">
+        <li><a href="#how">Slik fungerer det</a></li>
+        <li><a href="#features">Funksjoner</a></li>
+        <li><a href="#pricing">Priser</a></li>
+    </ul>
+    <a href="#pricing" class="nav-cta">Kom i gang →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        AI-support for el-sparkesykkelbutikker
+    </div>
+
+    <h1 class="hero-title">
+        Support<br>
+        på <span class="grad">autopilot</span>
+    </h1>
+
+    <p class="hero-sub">
+        Voltio analyserer kundehenvendelser i sanntid og gir agentene dine
+        presise svarforslag — direkte i Zendesk.
+    </p>
+
+    <div class="hero-actions">
+        <a href="#pricing" class="btn-primary">Start gratis prøve</a>
+        <a href="#how" class="btn-secondary">Se hvordan det fungerer</a>
+    </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+    <div class="marquee-track">
+        <span class="marquee-item">Zendesk-integrasjon</span>
+        <span class="marquee-item">RAG-teknologi</span>
+        <span class="marquee-item">PII-sikring</span>
+        <span class="marquee-item">GPT-4o</span>
+        <span class="marquee-item">Under 3 sekunder</span>
+        <span class="marquee-item">GDPR-samsvar</span>
+        <span class="marquee-item">Flerspråklig</span>
+        <span class="marquee-item">Servicemanualer</span>
+        <span class="marquee-item">Automatisk kategorisering</span>
+        <span class="marquee-item">Cloud Run</span>
+        <!-- duplicate for seamless loop -->
+        <span class="marquee-item">Zendesk-integrasjon</span>
+        <span class="marquee-item">RAG-teknologi</span>
+        <span class="marquee-item">PII-sikring</span>
+        <span class="marquee-item">GPT-4o</span>
+        <span class="marquee-item">Under 3 sekunder</span>
+        <span class="marquee-item">GDPR-samsvar</span>
+        <span class="marquee-item">Flerspråklig</span>
+        <span class="marquee-item">Servicemanualer</span>
+        <span class="marquee-item">Automatisk kategorisering</span>
+        <span class="marquee-item">Cloud Run</span>
+    </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+    <div class="how-header reveal">
+        <div class="section-label">// Slik fungerer det</div>
+        <h2 class="how-title">Tre steg.<br>Fullt integrert.</h2>
+    </div>
+
+    <div class="how-grid reveal">
+        <div class="how-card">
+            <div class="how-num">01 / INSTALLER</div>
+            <h3>Zendesk Marketplace</h3>
+            <p>Installer Voltio-appen fra Zendesk Marketplace på under ett minutt. Ingen teknisk kompetanse nødvendig.</p>
+        </div>
+        <div class="how-card">
+            <div class="how-num">02 / LAST OPP</div>
+            <h3>Servicedokumenter</h3>
+            <p>Last opp servicemanualer, FAQ og produktguider i admin-panelet. Voltio indekserer og lærer innholdet automatisk.</p>
+        </div>
+        <div class="how-card">
+            <div class="how-num">03 / BRUK</div>
+            <h3>Åpne en ticket</h3>
+            <p>Agentene åpner en ticket — Voltio analyserer og leverer et ferdig svarforslag med anbefalt kategori på sekunder.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES BENTO -->
+<section class="features-section" id="features">
+    <div class="features-header reveal">
+        <div class="section-label">// Funksjoner</div>
+        <h2 class="features-title">Alt du trenger.<br>Ingenting du ikke trenger.</h2>
+    </div>
+
+    <div class="bento reveal">
+        <div class="bento-card bento-1">
+            <span class="bento-tag">Kjerneteknologi</span>
+            <div class="bento-icon">🔍</div>
+            <h3>RAG-drevet kunnskapsbase</h3>
+            <p>Voltio henter relevante avsnitt fra dine egne dokumenter ved hjelp av vektorsøk og reranking — og bygger svar basert på nøyaktig innhold, ikke gjette-seg-frem.</p>
+        </div>
+        <div class="bento-card bento-2">
+            <span class="bento-tag">Sikkerhet</span>
+            <div class="bento-icon">🔒</div>
+            <h3>Automatisk PII-vasking</h3>
+            <p>Navn, e-post, telefon og adresser fjernes automatisk før data sendes til AI-modellen. Ingen personopplysninger forlater plattformen.</p>
+        </div>
+        <div class="bento-card bento-3">
+            <span class="bento-tag">Hastighet</span>
+            <div class="bento-icon">⚡</div>
+            <h3>Under 3 sek</h3>
+            <p>Streaming-respons vises tegn for tegn. Agentene venter aldri.</p>
+        </div>
+        <div class="bento-card bento-4">
+            <span class="bento-tag">Kategorisering</span>
+            <div class="bento-icon">🏷</div>
+            <h3>Auto-tagger</h3>
+            <p>Hver analyse inkluderer kategori og undertema — klar for Zendesk-tagging.</p>
+        </div>
+        <div class="bento-card bento-5">
+            <span class="bento-tag">Overholdelse</span>
+            <div class="bento-icon">🇪🇺</div>
+            <h3>GDPR-samsvar</h3>
+            <p>Ingenting lagres permanent. Infrastruktur i EU (europe-north1).</p>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="reveal">
+            <div class="stat-num">87%</div>
+            <div class="stat-label">raskere svar</div>
+        </div>
+        <div class="reveal">
+            <div class="stat-num">&lt;3s</div>
+            <div class="stat-label">responstid</div>
+        </div>
+        <div class="reveal">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">GDPR-samsvar</div>
+        </div>
+        <div class="reveal">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">dokumenter støttet</div>
+        </div>
+    </div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+    <div class="pricing-header reveal">
+        <div class="section-label">// Priser</div>
+        <h2 class="pricing-title">Rett og slett enkelt.</h2>
+        <p class="pricing-sub">Månedlig abonnement. Avbestill når som helst.</p>
+    </div>
+
+    <div class="pricing-grid reveal">
+        <!-- STARTER -->
+        <div class="price-card">
+            <div class="price-name">Starter</div>
+            <div class="price-amount">499<span style="font-size:1.2rem;font-weight:500">kr</span></div>
+            <div class="price-period">per måned</div>
+            <div class="price-divider"></div>
+            <ul class="price-features">
+                <li>1 Zendesk-integrasjon</li>
+                <li>500 ticket-analyser/mnd</li>
+                <li>Opptil 5 dokumenter</li>
+                <li>E-poststøtte</li>
+            </ul>
+            <a href="mailto:hei@voltio.no" class="price-btn price-btn-outline">Velg Starter</a>
+        </div>
+
+        <!-- GROWTH -->
+        <div class="price-card popular">
+            <span class="popular-badge">// Mest populær</span>
+            <div class="price-name">Growth</div>
+            <div class="price-amount">999<span style="font-size:1.2rem;font-weight:500">kr</span></div>
+            <div class="price-period">per måned</div>
+            <div class="price-divider"></div>
+            <ul class="price-features">
+                <li>3 Zendesk-integrasjoner</li>
+                <li>Ubegrenset ticket-analyser</li>
+                <li>Opptil 50 dokumenter</li>
+                <li>Prioritert support</li>
+                <li>Tilpasset velkomst-e-post</li>
+            </ul>
+            <a href="mailto:hei@voltio.no" class="price-btn price-btn-white">Velg Growth</a>
+        </div>
+
+        <!-- PRO -->
+        <div class="price-card">
+            <div class="price-name">Pro</div>
+            <div class="price-amount">1 999<span style="font-size:1.2rem;font-weight:500">kr</span></div>
+            <div class="price-period">per måned</div>
+            <div class="price-divider"></div>
+            <ul class="price-features">
+                <li>Ubegrenset integrasjoner</li>
+                <li>Ubegrenset alt</li>
+                <li>Dedikert onboarding</li>
+                <li>SLA-garanti</li>
+                <li>API-tilgang</li>
+            </ul>
+            <a href="mailto:hei@voltio.no" class="price-btn price-btn-outline">Velg Pro</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2 class="cta-title reveal">Klar til å skalere supporten?</h2>
+    <p class="cta-sub reveal">Kom i gang på under 10 minutter. Ingen kredittkort nødvendig for prøveperioden.</p>
+    <a href="#pricing" class="btn-primary reveal">Start gratis prøve →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <a href="index.html" class="footer-logo">Volt<span>io</span></a>
+    <ul class="footer-links">
+        <li><a href="personvern.html">Personvern</a></li>
+        <li><a href="mailto:hei@voltio.no">Kontakt</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 Voltio</span>
+</footer>
+
+<script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Smooth active nav link highlight
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(a => a.style.color = '');
+                const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+                if (active) active.style.color = 'rgba(255,255,255,0.9)';
+            }
+        });
+    }, { threshold: 0.5 });
+    sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>

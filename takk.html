@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voltio — Takk!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter Tight', sans-serif;
+            background: #000; color: #fff;
+            min-height: 100vh; display: flex;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 2rem;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        .box {
+            position: relative; z-index: 1;
+            max-width: 520px;
+        }
+        .check {
+            width: 64px; height: 64px;
+            background: rgba(79,143,255,0.1);
+            border: 1px solid rgba(79,143,255,0.3);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin: 0 auto 2rem;
+            animation: pop 0.5s ease;
+        }
+        @keyframes pop {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        h1 {
+            font-size: 2.5rem; font-weight: 900;
+            letter-spacing: -0.04em; margin-bottom: 1rem;
+        }
+        p { color: rgba(255,255,255,0.5); line-height: 1.7; }
+        .back {
+            display: inline-block; margin-top: 2rem;
+            color: #4f8fff; text-decoration: none;
+            font-size: 0.875rem; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="check">✓</div>
+    <h1>Betaling mottatt</h1>
+    <p>Sjekk e-posten din — API-nøkkelen og oppstartsguiden er på vei.</p>
+    <a href="index.html" class="back">← Tilbake til forsiden</a>
+</div>
+</body>
+</html>

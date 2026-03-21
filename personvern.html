@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personvern — Voltio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter Tight', -apple-system, sans-serif;
+            background: #000; color: rgba(255,255,255,0.85);
+            line-height: 1.75; padding: 6rem 2rem 4rem;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0 2.5rem; height: 60px;
+            display: flex; align-items: center;
+            z-index: 100;
+        }
+        .nav-logo { font-size: 1.1rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .nav-logo span { color: #4f8fff; }
+        .content {
+            position: relative; z-index: 1;
+            max-width: 720px; margin: 0 auto;
+        }
+        h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.2rem; font-weight: 700; margin: 2.5rem 0 0.75rem; color: #fff; }
+        p { font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-bottom: 1rem; }
+        li { font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-bottom: 0.3rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
+        th { text-align: left; font-weight: 600; color: rgba(255,255,255,0.5);
+             border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 0.75rem; }
+        td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+             color: rgba(255,255,255,0.6); }
+        code { background: rgba(79,143,255,0.1); padding: 0.1rem 0.4rem; border-radius: 4px;
+               font-size: 0.85em; color: #4f8fff; }
+        hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 2rem 0; }
+        ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        strong { color: rgba(255,255,255,0.85); }
+        .date { font-size: 0.8rem; color: rgba(255,255,255,0.3); margin-bottom: 3rem; }
+        blockquote {
+            border-left: 2px solid #4f8fff;
+            padding-left: 1rem; margin: 1rem 0;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<nav><a href="index.html" class="nav-logo">Volt<span>io</span></a></nav>
+<div class="content">
+
+    <h1>Personvernerklæring</h1>
+    <p class="date"><strong>Gjeldende fra:</strong> 20. mars 2026<br>
+    <strong>Behandlingsansvarlig:</strong> Voltio (og tilsvarende for alle butikker som bruker Voltio-plattformen)</p>
+
+    <hr>
+
+    <h2>1. Hvem vi er</h2>
+    <p>Voltio er en AI-drevet støtteplattform for el-sparkesykkelbutikker. Denne personvernerklæringen gjelder behandlingen av personopplysninger som skjer når kundeserviceagenter bruker plattformen til å håndtere supporthenvendelser.</p>
+    <p>Plattformen er bygget og driftes i Norge/EU (Google Cloud Platform, region europe-north1).</p>
+
+    <hr>
+
+    <h2>2. Hvilke opplysninger som samles inn</h2>
+    <p>Når en kundeserviceagent analyserer en ticket ved hjelp av plattformen, kan følgende opplysninger forekomme i den innsendte teksten:</p>
+    <table>
+        <tr><th>Kategori</th><th>Eksempel</th><th>Behandling</th></tr>
+        <tr><td>Navn på kunde</td><td>«Hei Kari Nordmann»</td><td>Vaskes automatisk → <code>[NAVN_FJERNET]</code></td></tr>
+        <tr><td>E-postadresse</td><td><code>kunde@eksempel.no</code></td><td>Vaskes automatisk → <code>[EPOST_FJERNET]</code></td></tr>
+        <tr><td>Telefonnummer</td><td><code>99123456</code>, <code>+47 99123456</code></td><td>Vaskes automatisk → <code>[TLF_FJERNET]</code></td></tr>
+        <tr><td>Personnummer (11 siffer)</td><td><code>01019012345</code></td><td>Vaskes automatisk → <code>[FNR_FJERNET]</code></td></tr>
+        <tr><td>Postadresse</td><td>Storgata 5</td><td>Vaskes automatisk → <code>[ADRESSE_FJERNET]</code></td></tr>
+        <tr><td>Ordrenummer / serienummer</td><td><code>ORD-12345</code></td><td>Beholdes (ikke personidentifiserende)</td></tr>
+        <tr><td>Teknisk feilbeskrivelse</td><td>«Motoren stopper ved 25 km/t»</td><td>Beholdes (nødvendig for AI-analyse)</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>3. Automatisk PII-vasking (anonymisering)</h2>
+    <p>Alle innsendinger gjennomgår automatisk anonymisering (PII-scrubbing) <strong>før</strong> data sendes til AI-tjenesten (OpenAI). Vaskingen skjer lokalt på serveren og bruker regulære uttrykk som fjerner:</p>
+    <ul>
+        <li>E-postadresser</li>
+        <li>Personnummer (11-sifrede norske)</li>
+        <li>Mobilnummer (norske og internasjonale +47-format)</li>
+        <li>Gateadresser (gjenkjent ved gata/veien/gate/vei + husnummer)</li>
+        <li>Postnummer ved siden av nøkkelord som «postnummer» eller «zip»</li>
+        <li>Navn etter hilsener som «Hei», «Hallo», «Mvh», «Vennlig hilsen»</li>
+    </ul>
+    <p><strong>Ingen identifiserbar personinformasjon sendes til OpenAI.</strong></p>
+
+    <hr>
+
+    <h2>4. Formålet med behandlingen</h2>
+    <p>Opplysningene brukes utelukkende til ett formål:</p>
+    <blockquote>Å gi kundeserviceagenten et AI-generert svarforslag og kategoritagger for den aktuelle supporthenvendelsen.</blockquote>
+    <p>Det genereres <strong>ingen</strong> brukerprofiler, det gjøres <strong>ingen</strong> krysskobling med andre datasett, og det foretas <strong>ingen</strong> automatiserte avgjørelser med rettslig virkning for kundene.</p>
+
+    <hr>
+
+    <h2>5. Datalagring — ingenting lagres</h2>
+    <p>Plattformen er designet etter prinsippet om dataminimering:</p>
+    <ul>
+        <li><strong>Ticket-tekst</strong> (etter vasking) lagres <strong>ikke</strong> permanent. Den brukes kun i den enkeltforespørselen som sendes til AI-modellen, og slettes fra minnet umiddelbart etter at svaret er returnert.</li>
+        <li><strong>AI-svar</strong> lagres <strong>ikke</strong> av plattformen. Svaret vises kun i agentens Zendesk-visning.</li>
+        <li><strong>Logger</strong> (systemlogger for drift og feilsøking) inneholder <strong>ikke</strong> personopplysninger, ettersom disse skrives etter at PII-vasking er utført.</li>
+        <li><strong>Dokumenter</strong> (serviceguider, manualer) som lastes opp av butikken inneholder ikke personopplysninger og lagres kryptert i Google Cloud Storage.</li>
+    </ul>
+
+    <hr>
+
+    <h2>6. AI-modelltrening — vi bruker ikke dine data</h2>
+    <p>Plattformen bruker OpenAI sitt API. I henhold til OpenAIs databruksvilkår for API-kunder brukes ikke API-trafikk til å trene eller forbedre OpenAIs modeller.</p>
+    <p><strong>Voltio bruker heller ikke ticket-innhold til å trene, finjustere eller forbedre egne modeller.</strong></p>
+
+    <hr>
+
+    <h2>7. Deling med tredjeparter</h2>
+    <table>
+        <tr><th>Tredjepart</th><th>Formål</th><th>Overføring til tredjeland</th><th>Grunnlag</th></tr>
+        <tr><td>OpenAI, Inc. (USA)</td><td>AI-inferens (anonymiserte spørringer)</td><td>USA (standardkontraktklausuler)</td><td>Behandleravtale (DPA)</td></tr>
+        <tr><td>Google Cloud Platform</td><td>Skyinfrastruktur og lagring</td><td>EU (europe-north1)</td><td>Behandleravtale</td></tr>
+        <tr><td>Stripe, Inc.</td><td>Betalingsbehandling (kun faktura/abonnement)</td><td>USA (standardkontraktklausuler)</td><td>Behandleravtale</td></tr>
+    </table>
+    <p>Ingen personopplysninger selges, leies ut eller deles med andre parter.</p>
+
+    <hr>
+
+    <h2>8. Behandlingsgrunnlag</h2>
+    <p>Behandlingen er basert på <strong>berettiget interesse</strong> (GDPR artikkel 6 nr. 1 bokstav f):</p>
+    <p>Den behandlingsansvarlige (butikken) har berettiget interesse i å gi effektiv og presis kundeservice. Interessen er proporsjonert: data anonymiseres automatisk, ingenting lagres, og behandlingen er begrenset til det som er nødvendig for å løse den konkrete supporthenvendelsen.</p>
+    <p>For behandling knyttet til opprettelse av brukerkonto og fakturering er grunnlaget <strong>avtaleutførelse</strong> (GDPR artikkel 6 nr. 1 bokstav b).</p>
+
+    <hr>
+
+    <h2>9. Den registrertes rettigheter</h2>
+    <p>Kunder hvis henvendelser har blitt behandlet med plattformen har rett til:</p>
+    <ul>
+        <li><strong>Innsyn</strong> — å få bekreftet om og hvilke opplysninger som behandles</li>
+        <li><strong>Retting</strong> — å få uriktige opplysninger korrigert</li>
+        <li><strong>Sletting</strong> — å kreve sletting («retten til å bli glemt»)</li>
+        <li><strong>Begrensning</strong> — å kreve begrenset behandling</li>
+        <li><strong>Innsigelse</strong> — å protestere mot behandling basert på berettiget interesse</li>
+        <li><strong>Dataportabilitet</strong> — å motta egne opplysninger i maskinlesbart format</li>
+    </ul>
+    <p>Ettersom ticket-tekst ikke lagres etter analyse, vil sletting i praksis ikke ha ytterligere effekt etter at svaret er levert.</p>
+
+    <hr>
+
+    <h2>10. Informasjonssikkerhet</h2>
+    <ul>
+        <li>All kommunikasjon skjer over HTTPS/TLS 1.3</li>
+        <li>API-nøkler lagres som krypterte secrets i Google Cloud Secret Manager</li>
+        <li>Tilgang til systemet krever gyldig API-nøkkel per tenant</li>
+        <li>Infrastruktur kjøres i Google Cloud Platform (ISO 27001-sertifisert)</li>
+        <li>Regelmessige gjennomganger av tilgangsstyring og logger</li>
+    </ul>
+
+    <hr>
+
+    <h2>11. Kontakt og klager</h2>
+    <p>For spørsmål om personvern, utøvelse av rettigheter eller klager:</p>
+    <p><strong>E-post:</strong> <a href="mailto:hei@voltio.no" style="color:#4f8fff">hei@voltio.no</a></p>
+    <p>Du har også rett til å klage til <strong>Datatilsynet</strong> (datatilsynet.no) dersom du mener behandlingen av dine personopplysninger er i strid med GDPR.</p>
+
+    <hr>
+
+    <h2>12. Endringer i personvernerklæringen</h2>
+    <p>Vesentlige endringer varsles via e-post til registrerte brukere minimum 30 dager før ikrafttredelse. Alltid gjeldende versjon finnes på <code>/personvern</code> i plattformens nettsted.</p>
+
+</div>
+</body>
+</html>
