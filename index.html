@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voltio — AI-support for el-sparkesykkelbutikker</title>
+    <title>Voltio — AI-support for kundeservice</title>
     <meta name="description" content="Voltio analyserer kundehenvendelser i sanntid og gir agentene dine presise svarforslag — direkte i Zendesk.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -11,26 +11,28 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --black: #000000;
-            --black2: #0a0a0a;
-            --black3: #111111;
-            --black4: #1a1a1a;
-            --white: #ffffff;
-            --white2: rgba(255,255,255,0.85);
-            --white3: rgba(255,255,255,0.45);
-            --white4: rgba(255,255,255,0.12);
-            --white5: rgba(255,255,255,0.06);
-            --accent: #4f8fff;
-            --accent2: #a78bfa;
-            --grid: rgba(255,255,255,0.04);
+            --bg: #ffffff;
+            --bg2: #f7f7f7;
+            --bg3: #f0f0f0;
+            --bg4: #e8e8e8;
+            --text: #0a0a0a;
+            --text2: rgba(0,0,0,0.75);
+            --text3: rgba(0,0,0,0.45);
+            --border: rgba(0,0,0,0.08);
+            --border2: rgba(0,0,0,0.14);
+            --accent: #2563eb;
+            --accent2: #7c3aed;
+            --accent-bg: rgba(37,99,235,0.07);
+            --accent-border: rgba(37,99,235,0.2);
+            --grid: rgba(0,0,0,0.04);
         }
 
         html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter Tight', -apple-system, sans-serif;
-            background: var(--black);
-            color: var(--white);
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
             line-height: 1.6;
         }
@@ -51,28 +53,28 @@
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 2.5rem;
             height: 60px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(255,255,255,0.85);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--white4);
+            border-bottom: 1px solid var(--border);
         }
         .nav-logo {
             font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px;
-            color: var(--white); text-decoration: none;
+            color: var(--text); text-decoration: none;
         }
         .nav-logo span { color: var(--accent); }
         .nav-links { display: flex; gap: 2rem; list-style: none; }
         .nav-links a {
-            color: var(--white3); text-decoration: none; font-size: 0.875rem;
+            color: var(--text3); text-decoration: none; font-size: 0.875rem;
             font-weight: 500; letter-spacing: 0.02em; transition: color 0.2s;
         }
-        .nav-links a:hover { color: var(--white); }
+        .nav-links a:hover { color: var(--text); }
         .nav-cta {
-            background: var(--white); color: var(--black);
+            background: var(--text); color: var(--bg);
             padding: 0.5rem 1.2rem; border-radius: 6px;
             font-size: 0.875rem; font-weight: 600; text-decoration: none;
             letter-spacing: -0.01em; transition: opacity 0.2s;
         }
-        .nav-cta:hover { opacity: 0.85; }
+        .nav-cta:hover { opacity: 0.8; }
 
         /* ── HERO ── */
         .hero {
@@ -87,11 +89,11 @@
         .hero::after {
             content: '';
             position: absolute;
-            top: -20%; left: 50%; transform: translateX(-50%);
+            top: -10%; left: 50%; transform: translateX(-50%);
             width: 900px; height: 600px;
             background: radial-gradient(ellipse at center,
-                rgba(79,143,255,0.18) 0%,
-                rgba(167,139,250,0.08) 50%,
+                rgba(37,99,235,0.1) 0%,
+                rgba(124,58,237,0.05) 50%,
                 transparent 70%);
             animation: glowPulse 6s ease-in-out infinite;
             pointer-events: none;
@@ -102,11 +104,11 @@
         }
         .hero-badge {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: var(--white5);
-            border: 1px solid var(--white4);
+            background: var(--accent-bg);
+            border: 1px solid var(--accent-border);
             padding: 0.35rem 0.9rem; border-radius: 100px;
             font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em;
-            color: var(--white3); text-transform: uppercase;
+            color: var(--accent); text-transform: uppercase;
             margin-bottom: 2rem;
             animation: fadeUp 0.8s ease both;
         }
@@ -123,17 +125,18 @@
             font-size: clamp(2.8rem, 8vw, 6.5rem);
             font-weight: 900; line-height: 1.0;
             letter-spacing: -0.04em; max-width: 16ch;
+            color: var(--text);
             animation: fadeUp 0.8s 0.1s ease both;
         }
         .hero-title .grad {
-            background: linear-gradient(135deg, var(--white) 30%, var(--accent) 70%, var(--accent2) 100%);
+            background: linear-gradient(135deg, var(--text) 20%, var(--accent) 60%, var(--accent2) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .hero-sub {
             margin-top: 1.5rem;
             font-size: clamp(1rem, 2vw, 1.2rem);
-            color: var(--white3); max-width: 50ch;
+            color: var(--text3); max-width: 50ch;
             font-weight: 400; line-height: 1.7;
             animation: fadeUp 0.8s 0.2s ease both;
         }
@@ -143,31 +146,32 @@
             animation: fadeUp 0.8s 0.3s ease both;
         }
         .btn-primary {
-            background: var(--white); color: var(--black);
+            background: var(--text); color: var(--bg);
             padding: 0.85rem 2rem; border-radius: 8px;
             font-size: 0.95rem; font-weight: 700;
             text-decoration: none; letter-spacing: -0.02em;
             transition: opacity 0.2s, transform 0.2s;
             display: inline-flex; align-items: center; gap: 0.5rem;
         }
-        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-primary:hover { opacity: 0.8; transform: translateY(-1px); }
         .btn-secondary {
-            background: transparent; color: var(--white2);
+            background: transparent; color: var(--text2);
             padding: 0.85rem 2rem; border-radius: 8px;
-            border: 1px solid var(--white4);
+            border: 1px solid var(--border2);
             font-size: 0.95rem; font-weight: 600;
             text-decoration: none; letter-spacing: -0.02em;
             transition: border-color 0.2s, color 0.2s, transform 0.2s;
         }
-        .btn-secondary:hover { border-color: var(--white3); color: var(--white); transform: translateY(-1px); }
+        .btn-secondary:hover { border-color: rgba(0,0,0,0.3); color: var(--text); transform: translateY(-1px); }
 
         /* ── MARQUEE ── */
         .marquee-section {
             position: relative; z-index: 1;
             padding: 2rem 0;
-            border-top: 1px solid var(--white4);
-            border-bottom: 1px solid var(--white4);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
             overflow: hidden;
+            background: var(--bg2);
         }
         .marquee-track {
             display: flex; gap: 3rem;
@@ -177,18 +181,18 @@
         .marquee-track:hover { animation-play-state: paused; }
         .marquee-item {
             font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em;
-            text-transform: uppercase; color: var(--white3);
+            text-transform: uppercase; color: var(--text3);
             font-family: 'JetBrains Mono', monospace;
             flex-shrink: 0;
             display: flex; align-items: center; gap: 0.8rem;
         }
-        .marquee-item::before { content: '//'; color: var(--accent); opacity: 0.6; }
+        .marquee-item::before { content: '//'; color: var(--accent); opacity: 0.7; }
         @keyframes marquee {
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
         }
 
-        /* ── SHARED SECTION STYLES ── */
+        /* ── SHARED ── */
         section { position: relative; z-index: 1; }
         .section-label {
             font-family: 'JetBrains Mono', monospace;
@@ -199,42 +203,41 @@
         .section-title {
             font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+            color: var(--text);
         }
         .section-sub {
-            margin-top: 1rem; font-size: 1rem; color: var(--white3);
+            margin-top: 1rem; font-size: 1rem; color: var(--text3);
             max-width: 52ch; line-height: 1.7;
         }
 
         /* ── HOW IT WORKS ── */
-        .how-section {
-            padding: 7rem 2rem;
-            max-width: 1100px; margin: 0 auto;
-        }
+        .how-section { padding: 7rem 2rem; max-width: 1100px; margin: 0 auto; }
         .how-header { text-align: center; margin-bottom: 5rem; }
         .how-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
-            background: var(--white4);
-            border: 1px solid var(--white4);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
             border-radius: 16px; overflow: hidden;
         }
         .how-card {
-            background: var(--black2); padding: 2.5rem;
-            transition: background 0.3s;
+            background: var(--bg); padding: 2.5rem;
+            transition: background 0.2s;
         }
-        .how-card:hover { background: var(--black3); }
+        .how-card:hover { background: var(--bg2); }
         .how-num {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.72rem; font-weight: 500;
             letter-spacing: 0.1em; color: var(--accent); margin-bottom: 1.5rem;
         }
-        .how-card h3 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
-        .how-card p { font-size: 0.9rem; color: var(--white3); line-height: 1.7; }
+        .how-card h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.75rem; color: var(--text); }
+        .how-card p { font-size: 0.9rem; color: var(--text3); line-height: 1.7; }
 
         /* ── STATS ── */
         .stats-section {
             padding: 5rem 2rem;
-            border-top: 1px solid var(--white4);
-            border-bottom: 1px solid var(--white4);
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
         .stats-grid {
             max-width: 900px; margin: 0 auto;
@@ -244,61 +247,53 @@
         .stat-num {
             font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 900; letter-spacing: -0.05em;
-            background: linear-gradient(135deg, var(--white) 40%, var(--accent));
+            background: linear-gradient(135deg, var(--text) 40%, var(--accent));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .stat-label {
-            font-size: 0.8rem; color: var(--white3);
+            font-size: 0.8rem; color: var(--text3);
             font-weight: 500; letter-spacing: 0.05em;
             margin-top: 0.3rem; text-transform: uppercase;
         }
 
         /* ── FEATURES ── */
-        .features-section {
-            padding: 7rem 2rem;
-            max-width: 1200px; margin: 0 auto;
-        }
+        .features-section { padding: 7rem 2rem; max-width: 1200px; margin: 0 auto; }
         .features-header { text-align: center; margin-bottom: 5rem; }
 
-        /* Feature groups */
-        .feature-group {
-            margin-bottom: 5rem;
-        }
+        .feature-group { margin-bottom: 5rem; }
         .feature-group-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.68rem; font-weight: 500;
             letter-spacing: 0.18em; text-transform: uppercase;
-            color: var(--white3);
+            color: var(--text3);
             border-left: 2px solid var(--accent);
             padding-left: 0.75rem;
             margin-bottom: 1.5rem;
         }
 
-        /* Bento grid */
         .bento {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            gap: 1.5px;
-            background: var(--white4);
-            border: 1px solid var(--white4);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
             border-radius: 16px; overflow: hidden;
         }
         .bento-card {
-            background: var(--black2); padding: 2.5rem;
-            transition: background 0.3s;
+            background: var(--bg); padding: 2.5rem;
+            transition: background 0.2s;
             position: relative; overflow: hidden;
         }
-        .bento-card:hover { background: var(--black3); }
+        .bento-card:hover { background: var(--bg2); }
         .bento-card::before {
             content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
             opacity: 0; transition: opacity 0.3s;
         }
         .bento-card:hover::before { opacity: 1; }
 
-        /* Span variants */
         .span-7 { grid-column: span 7; }
         .span-5 { grid-column: span 5; }
         .span-6 { grid-column: span 6; }
@@ -308,8 +303,8 @@
 
         .bento-icon {
             width: 44px; height: 44px;
-            background: var(--white5);
-            border: 1px solid var(--white4);
+            background: var(--bg2);
+            border: 1px solid var(--border2);
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem; margin-bottom: 1.5rem;
@@ -319,26 +314,25 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.68rem; font-weight: 500;
             letter-spacing: 0.08em; text-transform: uppercase;
-            background: rgba(79,143,255,0.1);
-            border: 1px solid rgba(79,143,255,0.2);
+            background: var(--accent-bg);
+            border: 1px solid var(--accent-border);
             color: var(--accent);
             padding: 0.2rem 0.55rem; border-radius: 4px;
             margin-bottom: 1rem;
         }
         .bento-card h3 {
             font-size: 1.15rem; font-weight: 700;
-            letter-spacing: -0.03em; margin-bottom: 0.6rem;
+            letter-spacing: -0.03em; margin-bottom: 0.6rem; color: var(--text);
         }
         .bento-card p {
-            font-size: 0.88rem; color: var(--white3);
-            line-height: 1.75;
+            font-size: 0.88rem; color: var(--text3); line-height: 1.75;
         }
         .bento-card ul {
             list-style: none; margin-top: 1rem;
             display: flex; flex-direction: column; gap: 0.45rem;
         }
         .bento-card ul li {
-            font-size: 0.85rem; color: var(--white3);
+            font-size: 0.85rem; color: var(--text3);
             display: flex; align-items: flex-start; gap: 0.6rem; line-height: 1.5;
         }
         .bento-card ul li::before {
@@ -348,42 +342,43 @@
             font-size: 0.78rem; margin-top: 0.05rem;
         }
 
-        /* Code snippet style */
         .code-block {
             margin-top: 1.25rem;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--white4);
+            background: var(--bg2);
+            border: 1px solid var(--border);
             border-radius: 8px; padding: 1rem 1.25rem;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem; color: var(--white3);
+            font-size: 0.78rem; color: var(--text3);
             line-height: 1.8;
         }
         .code-block .c-accent { color: var(--accent); }
-        .code-block .c-green { color: #4ade80; }
+        .code-block .c-green { color: #16a34a; }
         .code-block .c-purple { color: var(--accent2); }
-        .code-block .c-dim { color: rgba(255,255,255,0.25); }
+        .code-block .c-dim { color: rgba(0,0,0,0.25); }
 
-        /* ── CTA CONTACT SECTION ── */
+        /* ── CTA ── */
         .cta-section {
             padding: 8rem 2rem;
             text-align: center;
             position: relative; overflow: hidden;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
         }
         .cta-section::before {
             content: '';
-            position: absolute; bottom: -50%; left: 50%; transform: translateX(-50%);
+            position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
             width: 800px; height: 600px;
             background: radial-gradient(ellipse at center,
-                rgba(79,143,255,0.12) 0%, transparent 65%);
+                rgba(37,99,235,0.08) 0%, transparent 65%);
             pointer-events: none;
         }
         .cta-title {
             font-size: clamp(2.5rem, 7vw, 5rem);
             font-weight: 900; letter-spacing: -0.05em; line-height: 1.0;
-            max-width: 18ch; margin: 0 auto 1.5rem;
+            max-width: 18ch; margin: 0 auto 1.5rem; color: var(--text);
         }
         .cta-sub {
-            font-size: 1rem; color: var(--white3);
+            font-size: 1rem; color: var(--text3);
             max-width: 45ch; margin: 0 auto 2.5rem; line-height: 1.7;
         }
 
@@ -391,16 +386,17 @@
         footer {
             position: relative; z-index: 1;
             padding: 2.5rem;
-            border-top: 1px solid var(--white4);
+            border-top: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
             flex-wrap: wrap; gap: 1rem;
+            background: var(--bg);
         }
-        .footer-logo { font-size: 1rem; font-weight: 800; color: var(--white); text-decoration: none; letter-spacing: -0.5px; }
+        .footer-logo { font-size: 1rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
         .footer-logo span { color: var(--accent); }
         .footer-links { display: flex; gap: 2rem; list-style: none; }
-        .footer-links a { font-size: 0.8rem; color: var(--white3); text-decoration: none; transition: color 0.2s; }
-        .footer-links a:hover { color: var(--white); }
-        .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--white3); }
+        .footer-links a { font-size: 0.8rem; color: var(--text3); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--text); }
+        .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text3); }
 
         /* ── ANIMATIONS ── */
         @keyframes fadeUp {
@@ -440,10 +436,10 @@
 <section class="hero">
     <div class="hero-badge">
         <div class="hero-badge-dot"></div>
-        AI-support for el-sparkesykkelbutikker
+        Zendesk-integrasjon · GDPR-samsvar · GPT-4o
     </div>
     <h1 class="hero-title">
-        Support<br>på <span class="grad">autopilot</span>
+        <span class="grad">AI-support</span><br>for kundeservice
     </h1>
     <p class="hero-sub">
         Voltio analyserer kundehenvendelser i sanntid og gir agentene dine
@@ -536,7 +532,7 @@
         <p class="section-sub">Voltio er bygget for én ting: å gjøre kundeserviceagenter raskere og mer presise — uten at de trenger å bytte verktøy.</p>
     </div>
 
-    <!-- GROUP 1: Zendesk-integrasjon -->
+    <!-- GROUP 1: Zendesk -->
     <div class="feature-group reveal">
         <div class="feature-group-label">Zendesk-integrasjon</div>
         <div class="bento">
@@ -557,16 +553,16 @@
                 <h3>Tilpass tonen i svaret</h3>
                 <p>Velg mellom tre kommunikasjonsstiler før analysen kjøres. Voltio tilpasser formuleringer og ord etter valget ditt.</p>
                 <ul>
-                    <li><strong style="color:var(--white2)">Formell</strong> — bruker «De» og formelt språk</li>
-                    <li><strong style="color:var(--white2)">Nøytral</strong> — saklig og informativ</li>
-                    <li><strong style="color:var(--white2)">Vennlig</strong> — varm og imøtekommende</li>
+                    <li><strong>Formell</strong> — bruker «De» og formelt språk</li>
+                    <li><strong>Nøytral</strong> — saklig og informativ</li>
+                    <li><strong>Vennlig</strong> — varm og imøtekommende</li>
                 </ul>
             </div>
             <div class="bento-card span-6">
                 <span class="bento-tag">Auto-tagging</span>
                 <div class="bento-icon">🏷</div>
                 <h3>Automatisk kategori og tagger</h3>
-                <p>Hver analyse returnerer 1–4 foreslåtte Zendesk-tagger basert på innholdet i ticketen. Tagge én og én, eller trykk «Legg til alle» for å sette alle samtidig.</p>
+                <p>Hver analyse returnerer 1–4 foreslåtte Zendesk-tagger basert på innholdet i ticketen. Tagg én og én, eller trykk «Legg til alle» for å sette alle samtidig.</p>
                 <div class="code-block">
                     <span class="c-dim">// Eksempel på tagger</span><br>
                     <span class="c-accent">batteri</span> &nbsp;<span class="c-green">motor</span> &nbsp;<span class="c-purple">garanti</span>
@@ -576,7 +572,7 @@
                 <span class="bento-tag">Eskalering</span>
                 <div class="bento-icon">⚠️</div>
                 <h3>Automatisk eskaleringsvarsel</h3>
-                <p>Voltio vurderer om saken bør eskaleres til en senior agent eller leder. Et tydelig varsel vises i Zendesk med forklaringen på norsk.</p>
+                <p>Voltio vurderer om saken bør eskaleres til en senior agent eller leder. Et tydelig varsel vises med forklaringen på norsk.</p>
                 <ul>
                     <li>Juridiske trusler eller sikkerhetsrisiko</li>
                     <li>Gjentatt frustrert kunde</li>
@@ -595,7 +591,7 @@
                 <span class="bento-tag">RAG-teknologi</span>
                 <div class="bento-icon">🔍</div>
                 <h3>Henter fra dine egne dokumenter</h3>
-                <p>Voltio bruker Retrieval-Augmented Generation (RAG) — ikke generell AI-kunnskap, men nøyaktig informasjon fra dine egne servicemanualer og FAQ-sider.</p>
+                <p>Voltio bruker Retrieval-Augmented Generation — ikke generell AI-kunnskap, men nøyaktig informasjon fra dine egne servicemanualer og FAQ-sider.</p>
                 <ul>
                     <li>Vektorsøk finner de 10 mest relevante avsnittene</li>
                     <li>Reranker velger ut de 5 beste</li>
@@ -617,7 +613,7 @@
                 <span class="bento-tag">Ticket-historikk</span>
                 <div class="bento-icon">📋</div>
                 <h3>Full oversikt over kunden — ikke bare én ticket</h3>
-                <p>Voltio henter alle tidligere tickets fra samme kunde og viser dem i en tidslinje direkte i sidepanelet. Agenten ser mønster, gjentagende problemer og tidligere løsninger — uten å søke manuelt i Zendesk.</p>
+                <p>Voltio henter alle tidligere tickets fra samme kunde og viser dem i en tidslinje direkte i sidepanelet. Agenten ser mønstre, gjentagende problemer og tidligere løsninger — uten å søke manuelt i Zendesk.</p>
                 <ul style="flex-direction: row; flex-wrap: wrap; gap: 0.6rem 2rem; margin-top: 1rem;">
                     <li>Ticket-status og dato for hvert tilfelle</li>
                     <li>Emne og sammendrag av tidligere henvendelser</li>
@@ -646,7 +642,7 @@
                 <span class="bento-tag">GDPR</span>
                 <div class="bento-icon">🇪🇺</div>
                 <h3>Ingenting lagres</h3>
-                <p>Ticket-tekst brukes kun i den enkeltforespørselen, deretter slettes den fra minnet. Ingen brukerprofiler, ingen krysskobling, ingen automatiserte beslutninger.</p>
+                <p>Ticket-tekst brukes kun i den enkeltforespørselen, deretter slettes den fra minnet. Ingen brukerprofiler, ingen krysskobling.</p>
                 <ul>
                     <li>Infrastruktur i EU (europe-north1)</li>
                     <li>HTTPS/TLS 1.3 for all kommunikasjon</li>
@@ -657,26 +653,26 @@
                 <div style="display:grid; grid-template-columns: repeat(4,1fr); gap: 2rem;">
                     <div>
                         <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent);margin-bottom:0.5rem;">E-post</div>
-                        <div style="font-size:0.83rem;color:var(--white3);">kunde@eksempel.no → <span style="color:#4ade80">[EPOST_FJERNET]</span></div>
+                        <div style="font-size:0.83rem;color:var(--text3);">kunde@eksempel.no → <span style="color:#16a34a">[EPOST_FJERNET]</span></div>
                     </div>
                     <div>
                         <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent);margin-bottom:0.5rem;">Telefon</div>
-                        <div style="font-size:0.83rem;color:var(--white3);">+47 99123456 → <span style="color:#4ade80">[TLF_FJERNET]</span></div>
+                        <div style="font-size:0.83rem;color:var(--text3);">+47 99123456 → <span style="color:#16a34a">[TLF_FJERNET]</span></div>
                     </div>
                     <div>
                         <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent);margin-bottom:0.5rem;">Navn</div>
-                        <div style="font-size:0.83rem;color:var(--white3);">Hei Kari → <span style="color:#4ade80">[NAVN_FJERNET]</span></div>
+                        <div style="font-size:0.83rem;color:var(--text3);">Hei Kari → <span style="color:#16a34a">[NAVN_FJERNET]</span></div>
                     </div>
                     <div>
                         <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent);margin-bottom:0.5rem;">Adresse</div>
-                        <div style="font-size:0.83rem;color:var(--white3);">Storgata 5 → <span style="color:#4ade80">[ADRESSE_FJERNET]</span></div>
+                        <div style="font-size:0.83rem;color:var(--text3);">Storgata 5 → <span style="color:#16a34a">[ADRESSE_FJERNET]</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- GROUP 4: Administrasjon -->
+    <!-- GROUP 4: Admin -->
     <div class="feature-group reveal">
         <div class="feature-group-label">Administrasjon og oppsett</div>
         <div class="bento">
@@ -699,16 +695,15 @@
                 <p>Hver butikk har sin egen isolerte kunnskapsbase og API-nøkkel. Dokumenter, analyser og data holdes fullstendig adskilt mellom kunder — uansett om du driver én butikk eller en kjede.</p>
                 <ul>
                     <li>Unik API-nøkkel per tenant</li>
-                    <li>Egne ChromaDB-samlinger per butikk</li>
+                    <li>Egne samlinger per butikk</li>
                     <li>Automatisk oppsett ved registrering</li>
                 </ul>
             </div>
         </div>
     </div>
-
 </section>
 
-<!-- CTA / CONTACT -->
+<!-- CTA -->
 <section class="cta-section" id="contact">
     <div class="section-label reveal" style="justify-content:center;display:flex">// Ta kontakt</div>
     <h2 class="cta-title reveal">Klar til å effektivisere supporten?</h2>
@@ -745,7 +740,7 @@
             if (entry.isIntersecting) {
                 navLinks.forEach(a => a.style.color = '');
                 const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
-                if (active) active.style.color = 'rgba(255,255,255,0.9)';
+                if (active) active.style.color = 'rgba(0,0,0,0.9)';
             }
         });
     }, { threshold: 0.4 });
