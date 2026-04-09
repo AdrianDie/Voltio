@@ -399,6 +399,81 @@
         .footer-links a:hover { color: var(--text); }
         .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text3); }
 
+        /* ── CONTACT MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal {
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 480px; width: 100%;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.15);
+        }
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 1.25rem; right: 1.25rem;
+            background: var(--bg2); border: 1px solid var(--border);
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 1.1rem; color: var(--text3);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: var(--bg3); color: var(--text); }
+        .modal-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 0.75rem;
+        }
+        .modal h3 {
+            font-size: 1.6rem; font-weight: 800;
+            letter-spacing: -0.04em; margin-bottom: 0.5rem;
+        }
+        .modal p {
+            font-size: 0.9rem; color: var(--text3);
+            line-height: 1.65; margin-bottom: 1.75rem;
+        }
+        .modal-email-block {
+            background: var(--bg2); border: 1px solid var(--border2);
+            border-radius: 10px; padding: 1rem 1.25rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .modal-email-addr {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--text);
+        }
+        .modal-copy-btn {
+            background: none; border: 1px solid var(--border2);
+            border-radius: 6px; padding: 0.35rem 0.85rem;
+            font-size: 0.78rem; font-weight: 600;
+            color: var(--text3); cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+            font-family: inherit;
+        }
+        .modal-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .modal-copy-btn.copied { border-color: #16a34a; color: #16a34a; }
+        .modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .modal-actions .btn-primary { flex: 1; text-align: center; justify-content: center; }
+        .modal-note {
+            margin-top: 1.25rem;
+            font-size: 0.75rem; color: var(--text3);
+            text-align: center;
+        }
+
         /* ── ANIMATIONS ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(24px); }
@@ -529,6 +604,24 @@
 </head>
 <body>
 
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal">
+    <div class="modal">
+        <button class="modal-close" id="modalClose">×</button>
+        <div class="modal-eyebrow">// Ta kontakt</div>
+        <h3>Vi hjelper deg i gang</h3>
+        <p>Send oss en e-post, så setter vi opp prøveperioden din og hjelper deg med oppsett — gratis.</p>
+        <div class="modal-email-block">
+            <span class="modal-email-addr">hei@voltio.no</span>
+            <button class="modal-copy-btn" id="copyEmailBtn">Kopier</button>
+        </div>
+        <div class="modal-actions">
+            <a href="mailto:hei@voltio.no?subject=Prøveperiode Voltio" class="btn-primary">Åpne e-postklient →</a>
+        </div>
+        <p class="modal-note">Ingen kredittkort · Svar innen 24 timer</p>
+    </div>
+</div>
+
 <!-- NAV -->
 <nav>
     <a href="index.html" class="nav-logo">Volt<span>io</span></a>
@@ -537,7 +630,7 @@
         <li><a href="#features">Funksjoner</a></li>
         <li><a href="#contact">Kontakt</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Ta kontakt →</a>
+    <a href="#" class="nav-cta open-modal">Ta kontakt →</a>
     <button class="hamburger" id="hamburger" aria-label="Meny">
         <span></span><span></span><span></span>
     </button>
@@ -546,8 +639,8 @@
 <div class="mobile-menu" id="mobileMenu">
     <a href="#how">Slik fungerer det</a>
     <a href="#features">Funksjoner</a>
-    <a href="#contact">Kontakt</a>
-    <a href="#contact" class="nav-cta-mobile">Ta kontakt →</a>
+    <a href="#" class="open-modal">Kontakt</a>
+    <a href="#" class="nav-cta-mobile open-modal">Ta kontakt →</a>
 </div>
 
 <!-- HERO -->
@@ -564,7 +657,7 @@
         bedriftens egne løsningsmanualer — i sanntid, for hver eneste ticket.
     </p>
     <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Prøv gratis i 14 dager →</a>
+        <a href="#" class="btn-primary open-modal">Prøv gratis i 14 dager →</a>
         <a href="#how" class="btn-secondary">Se hvordan det fungerer</a>
     </div>
     <p style="margin-top:1.25rem;font-size:0.8rem;color:var(--text3);animation:fadeUp 0.8s 0.45s ease both;">
@@ -826,8 +919,8 @@
     <h2 class="cta-title reveal">14 dager gratis.<br>Ingen risiko.</h2>
     <p class="cta-sub reveal">Vi er i en tidlig fase og tar inn et begrenset antall bedrifter for prøveperiode. Send oss en e-post — så setter vi deg opp og hjelper deg i gang.</p>
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;" class="reveal">
-        <a href="mailto:hei@voltio.no" class="btn-primary">Start gratis prøveperiode →</a>
-        <a href="mailto:hei@voltio.no" class="btn-secondary">Book en demo</a>
+        <a href="#" class="btn-primary open-modal">Start gratis prøveperiode →</a>
+        <a href="#" class="btn-secondary open-modal">Book en demo</a>
     </div>
     <p style="margin-top:1.5rem;font-size:0.8rem;color:var(--text3);" class="reveal">
         Ingen kredittkort &nbsp;·&nbsp; Oppsett inkludert &nbsp;·&nbsp; Avbryt når som helst
@@ -839,7 +932,7 @@
     <a href="index.html" class="footer-logo">Volt<span>io</span></a>
     <ul class="footer-links">
         <li><a href="personvern.html">Personvern</a></li>
-        <li><a href="mailto:hei@voltio.no">Kontakt</a></li>
+        <li><a href="#" class="open-modal">Kontakt</a></li>
     </ul>
     <span class="footer-copy">© 2026 Voltio</span>
 </footer>
@@ -855,6 +948,37 @@
         });
     }, { threshold: 0.08 });
     reveals.forEach(el => observer.observe(el));
+
+    // Contact modal
+    const modal = document.getElementById('contactModal');
+    const modalClose = document.getElementById('modalClose');
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+
+    function openModal(e) {
+        e.preventDefault();
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.open-modal').forEach(el => el.addEventListener('click', openModal));
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    copyEmailBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText('hei@voltio.no').then(() => {
+            copyEmailBtn.textContent = 'Kopiert ✓';
+            copyEmailBtn.classList.add('copied');
+            setTimeout(() => {
+                copyEmailBtn.textContent = 'Kopier';
+                copyEmailBtn.classList.remove('copied');
+            }, 2000);
+        });
+    });
 
     // Hamburger menu
     const hamburger = document.getElementById('hamburger');
