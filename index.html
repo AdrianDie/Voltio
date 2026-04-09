@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voltio – AI-støtte for Zendesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #6D28D9;
+      --primary-mid: #7C3AED;
+      --primary-light: #8B5CF6;
+      --primary-glow: rgba(109,40,217,.15);
+      --accent: #06B6D4;
+      --bg: #ffffff;
+      --bg-subtle: #F8F7FF;
+      --bg-dark: #0D0A1A;
+      --bg-dark2: #150F2B;
+      --text: #0F0A1E;
+      --text-muted: #64748B;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --success: #10B981;
+      --warn: #F59E0B;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,.07);
+      --shadow-lg: 0 12px 48px rgba(109,40,217,.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── UTILITIES ─── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .sr-only { position: absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #A855F7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: none; }
+    .fade-up:nth-child(2) { transition-delay: .1s; }
+    .fade-up:nth-child(3) { transition-delay: .2s; }
+    .fade-up:nth-child(4) { transition-delay: .3s; }
+    .fade-up:nth-child(5) { transition-delay: .4s; }
+    .fade-up:nth-child(6) { transition-delay: .5s; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      transition: background .3s, box-shadow .3s;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .nav-logo svg { width: 28px; height: 28px; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+      flex: 1;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+    .btn-ghost {
+      background: none; border: none;
+      font-size: .9rem; font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: color .2s, background .2s;
+      text-decoration: none;
+    }
+    .btn-ghost:hover { color: var(--primary); background: var(--primary-glow); }
+    .btn-primary {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .2s, box-shadow .2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary:hover { opacity: .9; transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none; border: none;
+      cursor: pointer;
+      padding: 6px;
+      margin-left: auto;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.1);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .mobile-menu .btn-primary { width: 100%; justify-content: center; margin-top: 8px; }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 144px 0 80px;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -300px;
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(109,40,217,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-glow);
+      border: 1px solid rgba(109,40,217,.25);
+      color: var(--primary);
+      font-size: .8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      animation: fadeInDown .6s ease both;
+    }
+    .hero-badge svg { width: 14px; height: 14px; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -.03em;
+      margin-bottom: 20px;
+      animation: fadeInUp .7s .1s ease both;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 32px;
+      animation: fadeInUp .7s .2s ease both;
+    }
+    .hero-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      animation: fadeInUp .7s .3s ease both;
+      flex-wrap: wrap;
+    }
+    .hero-form input {
+      flex: 1;
+      min-width: 200px;
+      padding: 13px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: .95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+    }
+    .hero-form input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .hero-form input::placeholder { color: #A0AEC0; }
+    .hero-form .btn-primary { padding: 13px 24px; font-size: .95rem; white-space: nowrap; }
+
+    .hero-note {
+      font-size: .82rem;
+      color: #94A3B8;
+      animation: fadeInUp .7s .4s ease both;
+    }
+    .hero-note span { margin: 0 6px; }
+
+    /* ─── PRODUCT MOCKUP ─── */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeInUp .8s .2s ease both;
+    }
+    .mockup-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+    }
+    .mockup-bg-blob {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at 60% 40%, rgba(109,40,217,.12) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+      animation: blobPulse 5s ease-in-out infinite;
+    }
+    @keyframes blobPulse {
+      0%,100% { transform: scale(1); opacity: .8; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    .mockup-card {
+      position: relative;
+      z-index: 1;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+      overflow: hidden;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .mockup-topbar {
+      background: #FAFAFA;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mockup-dots { display: flex; gap: 5px; }
+    .mockup-dots span {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .mockup-dots span:nth-child(1) { background: #FF5F57; }
+    .mockup-dots span:nth-child(2) { background: #FEBC2E; }
+    .mockup-dots span:nth-child(3) { background: #28C840; }
+    .mockup-topbar-label {
+      flex: 1;
+      text-align: center;
+      font-size: .75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .mockup-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* customer card */
+    .mc-customer {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+    }
+    .mc-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: .75rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .mc-name { font-size: .82rem; font-weight: 600; }
+    .mc-sub { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* tags */
+    .mc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mc-tag {
+      font-size: .72rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 100px;
+      background: #EDE9FE; color: #5B21B6;
+    }
+    .mc-tag.warn { background: #FEF3C7; color: #92400E; }
+
+    /* tone */
+    .mc-tone { display: flex; gap: 6px; }
+    .mc-tone-btn {
+      flex: 1; padding: 6px 0;
+      border-radius: var(--radius-sm);
+      font-size: .72rem; font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: white; cursor: pointer;
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+    .mc-tone-btn.active {
+      background: var(--primary-glow);
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* response */
+    .mc-response {
+      background: #F8F7FF;
+      border: 1px solid #DDD6FE;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .mc-response-label {
+      font-size: .7rem; font-weight: 700;
+      color: var(--primary-light);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .mc-response-label::before {
+      content: '';
+      display: block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(16,185,129,.2);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(16,185,129,.2); }
+      50% { box-shadow: 0 0 0 6px rgba(16,185,129,.05); }
+    }
+    .mc-response-text { font-size: .8rem; line-height: 1.6; color: var(--text); }
+    .mc-response-text strong { font-weight: 600; }
+
+    /* actions */
+    .mc-actions { display: flex; gap: 8px; }
+    .mc-btn {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: var(--radius-sm);
+      font-size: .78rem; font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: white; color: var(--text-muted);
+      transition: all .15s;
+    }
+    .mc-btn:hover { border-color: var(--primary-light); color: var(--primary); background: var(--primary-glow); }
+    .mc-btn.insert {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: white; border: none;
+    }
+    .mc-btn.insert:hover { opacity: .9; }
+
+    /* floating badges */
+    .mockup-badge {
+      position: absolute;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: .75rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,.1);
+      display: flex; align-items: center; gap: 7px;
+      animation: float 6s ease-in-out infinite;
+      z-index: 2;
+    }
+    .mockup-badge.badge-1 {
+      top: -16px; right: -20px;
+      animation-delay: 1s;
+    }
+    .mockup-badge.badge-2 {
+      bottom: 24px; left: -24px;
+      animation-delay: 2.5s;
+    }
+    .badge-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .badge-dot.green { background: var(--success); }
+    .badge-dot.yellow { background: var(--warn); }
+
+    /* ─── LOGOS ─── */
+    .logos-section {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .logos-label {
+      text-align: center;
+      font-size: .82rem;
+      font-weight: 600;
+      color: #94A3B8;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .logos-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 40px 56px;
+    }
+    .logo-item {
+      font-size: .95rem;
+      font-weight: 800;
+      color: #CBD5E1;
+      letter-spacing: -.02em;
+      transition: color .2s;
+    }
+    .logo-item:hover { color: var(--text-muted); }
+
+    /* ─── FEATURES ─── */
+    .features-section { padding: 96px 0; background: var(--bg); }
+    .section-eyebrow {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-heading {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color .25s, box-shadow .25s, transform .25s;
+      cursor: default;
+    }
+    .feature-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: 0 8px 32px rgba(109,40,217,.1);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--primary-glow);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .feature-icon svg { width: 22px; height: 22px; color: var(--primary); }
+    .feature-card h3 {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: .88rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section { padding: 96px 0; background: var(--bg-subtle); }
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 56px;
+      position: relative;
+    }
+    .steps-row::before {
+      content: '';
+      position: absolute;
+      top: 28px; left: calc(16.66% + 20px); right: calc(16.66% + 20px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-mid) 50%, var(--primary-light) 100%);
+      opacity: .3;
+    }
+    .step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.1rem; font-weight: 800;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(109,40,217,.3);
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .step-duration {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      background: var(--primary-glow);
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+    .step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: .88rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ─── STATS ─── */
+    .stats-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, #1E1048 0%, #2D1B69 50%, #1E1048 100%);
+      color: white;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+    .stat-item {}
+    .stat-number {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      background: linear-gradient(135deg, #A78BFA, #E879F9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: .88rem;
+      color: rgba(255,255,255,.6);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ─── PRICING ─── */
+    .pricing-section { padding: 96px 0; background: var(--bg); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 56px;
+      align-items: start;
+    }
+    .pricing-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: transform .25s, box-shadow .25s;
+      position: relative;
+    }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .pricing-card.popular {
+      background: linear-gradient(160deg, #3730A3 0%, #5B21B6 60%, #6D28D9 100%);
+      border-color: transparent;
+      color: white;
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+    .pricing-card.popular:hover { transform: translateY(-10px); }
+    .popular-badge {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #F59E0B, #EF4444);
+      color: white;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .plan-name {
+      font-size: .8rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .pricing-card.popular .plan-name { color: rgba(255,255,255,.7); }
+    .plan-price {
+      font-size: 2rem; font-weight: 900;
+      letter-spacing: -.03em;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+    .plan-period {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .pricing-card.popular .plan-period { color: rgba(255,255,255,.6); }
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+    .pricing-card.popular .plan-divider { background: rgba(255,255,255,.2); }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .plan-features li {
+      font-size: .85rem;
+      display: flex; align-items: flex-start; gap: 8px;
+      color: var(--text-muted);
+    }
+    .pricing-card.popular .plan-features li { color: rgba(255,255,255,.8); }
+    .plan-features li::before {
+      content: '';
+      display: block;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #D1FAE5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2310B981'%3E%3Cpath d='M13.5 4.5 6.5 11.5l-4-4'/%3E%3C/svg%3E") center/10px no-repeat;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .pricing-card.popular .plan-features li::before { background-color: rgba(255,255,255,.2); }
+    .plan-cta {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: .9rem; font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text);
+      transition: all .2s;
+    }
+    .plan-cta:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-glow); }
+    .pricing-card.popular .plan-cta {
+      background: white;
+      color: var(--primary);
+      border: none;
+    }
+    .pricing-card.popular .plan-cta:hover { background: rgba(255,255,255,.9); }
+    .enterprise-note {
+      text-align: center;
+      margin-top: 32px;
+      font-size: .88rem;
+      color: var(--text-muted);
+    }
+    .enterprise-note a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .enterprise-note a:hover { text-decoration: underline; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials-section { padding: 96px 0; background: var(--bg-subtle); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .testimonial-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .testimonial-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .testimonial-stars {
+      display: flex; gap: 3px; margin-bottom: 16px;
+    }
+    .testimonial-stars span { color: #F59E0B; font-size: 1rem; }
+    .testimonial-quote {
+      font-size: .9rem;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: .8rem; font-weight: 700;
+    }
+    .testimonial-name { font-size: .88rem; font-weight: 600; }
+    .testimonial-role { font-size: .78rem; color: var(--text-muted); }
+
+    /* ─── CTA SECTION ─── */
+    .cta-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, #0D0A1A 0%, #1E1048 50%, #0D0A1A 100%);
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(109,40,217,.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .cta-section p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,.6);
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+      position: relative;
+    }
+    .cta-form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .cta-form input {
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color: white;
+      font-size: .95rem;
+      font-family: inherit;
+      outline: none;
+      min-width: 260px;
+      transition: border .2s;
+    }
+    .cta-form input::placeholder { color: rgba(255,255,255,.35); }
+    .cta-form input:focus { border-color: var(--primary-light); }
+    .cta-form .btn-primary { padding: 14px 28px; font-size: .95rem; }
+    .cta-note {
+      margin-top: 14px;
+      font-size: .8rem;
+      color: rgba(255,255,255,.35);
+      position: relative;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg-dark);
+      color: rgba(255,255,255,.5);
+      padding: 60px 0 32px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand .nav-logo { color: white; margin-bottom: 12px; display: flex; }
+    .footer-brand p {
+      font-size: .85rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 20px;
+    }
+    .footer-social { display: flex; gap: 12px; }
+    .footer-social a {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.4);
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .footer-social a:hover { border-color: var(--primary-light); color: var(--primary-light); }
+    .footer-social svg { width: 16px; height: 16px; }
+    .footer-col h4 {
+      font-size: .8rem; font-weight: 700;
+      color: rgba(255,255,255,.7);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul a {
+      font-size: .85rem;
+      color: rgba(255,255,255,.4);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-col ul a:hover { color: rgba(255,255,255,.8); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.07);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: .82rem;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero { padding: 100px 0 60px; }
+      .hero-visual { order: -1; }
+      .mockup-wrap { max-width: 340px; }
+      .mockup-badge.badge-1 { display: none; }
+      .mockup-badge.badge-2 { left: -12px; }
+      .steps-row { grid-template-columns: 1fr; gap: 32px; }
+      .steps-row::before { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .pricing-card.popular { transform: none; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-brand { grid-column: span 2; }
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    @media (max-width: 480px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-brand { grid-column: span 1; }
+      .hero-form { flex-direction: column; }
+      .hero-form input, .hero-form .btn-primary { width: 100%; }
+      .cta-form { flex-direction: column; align-items: stretch; }
+      .cta-form input { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="url(#logoGrad)"/>
+        <path d="M16 4 L9 15 H14 L12 24 L19 13 H14 L16 4Z" fill="white"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4F46E5"/>
+            <stop offset="100%" stop-color="#7C3AED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      Voltio
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Produkt</a></li>
+      <li><a href="#how">Slik fungerer det</a></li>
+      <li><a href="#pricing">Priser</a></li>
+      <li><a href="#contact">Kontakt</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="#" class="btn-ghost">Logg inn</a>
+      <a href="#contact" class="btn-primary">Kom i gang →</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Meny">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features">Produkt</a>
+  <a href="#how">Slik fungerer det</a>
+  <a href="#pricing">Priser</a>
+  <a href="#contact">Kontakt</a>
+  <a href="#" class="btn-ghost">Logg inn</a>
+  <a href="#contact" class="btn-primary">Kom i gang →</a>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- Left: Text -->
+      <div>
+        <div class="hero-badge">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M8 1 L4.5 7.5H7.5L6 13 L9.5 6.5H6.5L8 1Z" fill="currentColor"/></svg>
+          Ny: Automatisk eskaleringsdeteksjon
+        </div>
+        <h1>Halvér svartiden med <span class="gradient-text">AI som kjenner produktene dine</span></h1>
+        <p>Voltio kobler seg til Zendesk og dine egne servicemanualer. Agentene dine får presise, ferdigformulerte svar på sekunder – ikke generiske forslag fra internett.</p>
+        <div class="hero-form">
+          <input type="email" placeholder="Jobb-e-postadresse" />
+          <a href="#" class="btn-primary">Prøv gratis i 14 dager →</a>
+        </div>
+        <p class="hero-note">Ingen kredittkort nødvendig <span>·</span> Oppsett på 5 minutter <span>·</span> Avbryt når som helst</p>
+      </div>
+
+      <!-- Right: Mockup -->
+      <div class="hero-visual">
+        <div class="mockup-wrap">
+          <div class="mockup-bg-blob"></div>
+
+          <div class="mockup-badge badge-1">
+            <span class="badge-dot green"></span>
+            Svar generert på 1,4 sek
+          </div>
+          <div class="mockup-badge badge-2">
+            <span class="badge-dot yellow"></span>
+            Ticket løst uten eskalering
+          </div>
+
+          <div class="mockup-card">
+            <div class="mockup-topbar">
+              <div class="mockup-dots"><span></span><span></span><span></span></div>
+              <div class="mockup-topbar-label">Voltio AI · Ticket #3421</div>
+            </div>
+            <div class="mockup-body">
+              <div class="mc-customer">
+                <div class="mc-avatar">KH</div>
+                <div>
+                  <div class="mc-name">Kristian Hansen</div>
+                  <div class="mc-sub">Batteri lader ikke etter oppdatering</div>
+                </div>
+              </div>
+              <div class="mc-tags">
+                <span class="mc-tag">batteri</span>
+                <span class="mc-tag">lader</span>
+                <span class="mc-tag">feil-kode</span>
+              </div>
+              <div class="mc-tone">
+                <button class="mc-tone-btn">Formell</button>
+                <button class="mc-tone-btn active">Nøytral</button>
+                <button class="mc-tone-btn">Vennlig</button>
+              </div>
+              <div class="mc-response">
+                <div class="mc-response-label">Foreslått svar</div>
+                <div class="mc-response-text">
+                  Hei Kristian! Prøv følgende:<br><br>
+                  <strong>1.</strong> Koble fra laderen og vent 60 sekunder<br>
+                  <strong>2.</strong> Kontroller at ladeporten er ren<br>
+                  <strong>3.</strong> Prøv med en annen stikkontakt<br><br>
+                  Hvis feilen vedvarer, er garantiperioden din aktiv til mars 2026.
+                </div>
+              </div>
+              <div class="mc-actions">
+                <button class="mc-btn">Kopier</button>
+                <button class="mc-btn insert">Sett inn i svar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LOGOS ═══════════════ -->
+<section class="logos-section">
+  <div class="container">
+    <div class="logos-label">Brukt av supportteam hos</div>
+    <div class="logos-row">
+      <div class="logo-item">E-Wheels</div>
+      <div class="logo-item">ElSykkel.no</div>
+      <div class="logo-item">CityMove</div>
+      <div class="logo-item">NordicBike</div>
+      <div class="logo-item">UrbanRide</div>
+      <div class="logo-item">VoltMobility</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="features-section" id="features">
+  <div class="container">
+    <p class="section-eyebrow fade-up">Funksjoner</p>
+    <h2 class="section-heading fade-up">Alt teamet trenger for raskere og bedre support</h2>
+    <p class="section-sub fade-up">Voltio er bygget spesielt for supportteam som bruker Zendesk og ønsker å bruke egne produktdokumenter som kilde for AI-svarene.</p>
+
+    <div class="features-grid">
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <h3>AI-analyse av tickets</h3>
+        <p>Hvert ticket analyseres automatisk. Du får problemoppsummering, feilsøkingssteg og et ferdig svar – basert på dine egne manualer, ikke generell data.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>Dine egne dokumenter</h3>
+        <p>Last opp PDF- eller Markdown-manualer. AI-en lærer av ditt innhold og svarer kun basert på det – ingen hallusinasjoner fra generell internettdata.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <h3>Tonetilpasning</h3>
+        <p>Formell, nøytral eller vennlig – agenten velger tonen, AI-en tilpasser hele svaret deretter. Konsistent kommunikasjon på tvers av hele teamet.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h3>Eskaleringsdeteksjon</h3>
+        <p>Voltio varsler automatisk med rød banner når kunden er frustrert, stiller juridiske spørsmål eller saken krever eskalering til en senior agent.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        </div>
+        <h3>Skriveassistent</h3>
+        <p>Forkort, utvid, rett grammatikk eller gjør om punktlister til flytende tekst – med ett klikk. Perfekt for å tilpasse et svar til den spesifikke kunden.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>GDPR-trygt</h3>
+        <p>Navn, e-post, telefonnummer og adresser fjernes automatisk før AI-behandling. En transparent logg vises til agenten slik at de alltid vet hva som skjedde.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="how-section" id="how">
+  <div class="container">
+    <p class="section-eyebrow fade-up" style="text-align:center">Slik fungerer det</p>
+    <h2 class="section-heading fade-up" style="text-align:center">Fra oppsett til første svar <span class="gradient-text">på under 10 minutter</span></h2>
+
+    <div class="steps-row">
+      <div class="step fade-up">
+        <div class="step-num">1</div>
+        <div class="step-duration">Ca. 1 minutt</div>
+        <h3>Last opp dokumentene dine</h3>
+        <p>Dra og slipp servicemanualer, FAQ-er eller interne guider som PDF eller Markdown. Voltio prosesserer dem automatisk og bygger en søkbar kunnskapsbase.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">2</div>
+        <div class="step-duration">Ca. 5 minutter</div>
+        <h3>Koble til Zendesk</h3>
+        <p>Installer Voltio som en Zendesk-app direkte fra vår guide. Lim inn API-nøkkelen du får tilsendt på e-post. Ingen koding, ingen IT-avdeling nødvendig.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">3</div>
+        <div class="step-duration">Fra dag én</div>
+        <h3>Teamet svarer raskere</h3>
+        <p>Agentene ser AI-forslag direkte i Zendesk-sidepanelet for hvert ticket. De velger, justerer og sender. Gjennomsnittlig svartid kuttes fra 8 til under 3 minutter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ STATS ═══════════════ -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-target="3">0</div>
+        <div class="stat-label">minutter spart per ticket<br><span style="opacity:.5;font-size:.75rem">vs. 8 minutter uten AI</span></div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-target="20" data-suffix="x">0x</div>
+        <div class="stat-label">gjennomsnittlig ROI<br><span style="opacity:.5;font-size:.75rem">basert på lønnskostnader</span></div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-target="2" data-prefix="<" data-suffix=" sek">&lt;0 sek</div>
+        <div class="stat-label">til første svarforslag<br><span style="opacity:.5;font-size:.75rem">med streaming i sanntid</span></div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-target="100" data-suffix="%">0%</div>
+        <div class="stat-label">GDPR-sikkert<br><span style="opacity:.5;font-size:.75rem">PII fjernes automatisk</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <p class="section-eyebrow fade-up" style="text-align:center">Priser</p>
+    <h2 class="section-heading fade-up" style="text-align:center">Enkel prising. <span class="gradient-text">Ingen overraskelser.</span></h2>
+    <p class="section-sub fade-up" style="text-align:center; margin: 0 auto 56px;">Alle planer inkluderer gratis 14-dagers prøveperiode. Ingen kredittkort nødvendig for å starte.</p>
+
+    <div class="pricing-grid">
+
+      <div class="pricing-card fade-up">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">3 990 kr</div>
+        <div class="plan-period">per måned</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Opptil 3 agenter</li>
+          <li>1 servicemanual</li>
+          <li>2 000 analyser/mnd</li>
+          <li>Norsk support</li>
+          <li>Zendesk-integrering</li>
+        </ul>
+        <button class="plan-cta">Prøv gratis</button>
+      </div>
+
+      <div class="pricing-card popular fade-up">
+        <div class="popular-badge">Mest populær</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price">7 990 kr</div>
+        <div class="plan-period">per måned</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Opptil 10 agenter</li>
+          <li>5 servicemanualer</li>
+          <li>8 000 analyser/mnd</li>
+          <li>Prioritert support</li>
+          <li>Eskaleringsdeteksjon</li>
+          <li>Skriveassistent</li>
+        </ul>
+        <button class="plan-cta">Prøv gratis</button>
+      </div>
+
+      <div class="pricing-card fade-up">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">14 990 kr</div>
+        <div class="plan-period">per måned</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Opptil 20 agenter</li>
+          <li>10 servicemanualer</li>
+          <li>20 000 analyser/mnd</li>
+          <li>Dedikert support</li>
+          <li>Alle funksjoner</li>
+          <li>Onboarding inkludert</li>
+        </ul>
+        <button class="plan-cta">Prøv gratis</button>
+      </div>
+
+      <div class="pricing-card fade-up">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">Fra 25 000 kr</div>
+        <div class="plan-period">per måned</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Ubegrenset agenter</li>
+          <li>Ubegrenset dokumenter</li>
+          <li>Ubegrenset analyser</li>
+          <li>SLA-garanti</li>
+          <li>Egendefinert oppsett</li>
+          <li>Dedikert kundeteam</li>
+        </ul>
+        <button class="plan-cta">Kontakt oss</button>
+      </div>
+
+    </div>
+    <p class="enterprise-note">Trenger du noe spesialtilpasset? <a href="mailto:hei@voltio.no">Ta kontakt med oss →</a></p>
+  </div>
+</section>
+
+<!-- ═══════════════ TESTIMONIALS ═══════════════ -->
+<section class="testimonials-section">
+  <div class="container">
+    <p class="section-eyebrow fade-up" style="text-align:center">Hva kundene sier</p>
+    <h2 class="section-heading fade-up" style="text-align:center">Supportteam som <span class="gradient-text">elsker Voltio</span></h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-up">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-quote">"Voltio har forandret hverdagen vår fullstendig. Vi løser nå tickets på under 3 minutter som tidligere tok 10–15. Teamet er mer motivert fordi de slipper å lete gjennom manualer hele dagen."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">ML</div>
+          <div>
+            <div class="testimonial-name">Marie Lund</div>
+            <div class="testimonial-role">Head of Support · E-Wheels Norge</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-up">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-quote">"Det tok bokstavelig talt 7 minutter å sette opp. Vi lastet opp PDF-manualen vår, koblet til Zendesk, og teamet var i gang. Eskaleringsdeteksjonen alene er verdt prisen."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">TK</div>
+          <div>
+            <div class="testimonial-name">Thomas Kvam</div>
+            <div class="testimonial-role">Customer Success Manager · CityMove</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-up">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-quote">"Vi var skeptiske til AI i kundestøtte, men Voltio svarer faktisk basert på våre egne dokumenter. Ikke generiske AI-svar. Presise svar fra vår servicemanual. Det gjør hele forskjellen."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">AB</div>
+          <div>
+            <div class="testimonial-name">Astrid Berg</div>
+            <div class="testimonial-role">Daglig leder · NordicBike</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <h2 class="fade-up">Klar til å prøve? <span class="gradient-text">Kom i gang på 5 minutter.</span></h2>
+    <p class="fade-up">Registrer deg i dag og gi teamet ditt AI-støtte som faktisk kjenner produktene dine. 14 dager gratis, ingen kredittkort.</p>
+    <div class="cta-form fade-up">
+      <input type="email" placeholder="Din jobb-e-post" />
+      <a href="#" class="btn-primary">Start gratis prøveperiode →</a>
+    </div>
+    <p class="cta-note fade-up">Lurer du på noe? Send oss en e-post på <a href="mailto:hei@voltio.no" style="color:rgba(255,255,255,.5);">hei@voltio.no</a></p>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="28" height="28" rx="8" fill="url(#logoGrad2)"/>
+            <path d="M16 4 L9 15 H14 L12 24 L19 13 H14 L16 4Z" fill="white"/>
+            <defs>
+              <linearGradient id="logoGrad2" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4F46E5"/>
+                <stop offset="100%" stop-color="#7C3AED"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          Voltio
+        </a>
+        <p>AI-drevet kundestøtte for Zendesk-team. Presise svar basert på dine egne dokumenter – ikke generell internettdata.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" aria-label="Twitter/X">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Produkt</h4>
+        <ul>
+          <li><a href="#features">Funksjoner</a></li>
+          <li><a href="#pricing">Priser</a></li>
+          <li><a href="#how">Slik fungerer det</a></li>
+          <li><a href="#">Integrasjoner</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Selskapet</h4>
+        <ul>
+          <li><a href="#">Om Voltio</a></li>
+          <li><a href="#">Blogg</a></li>
+          <li><a href="#">Karriere</a></li>
+          <li><a href="mailto:hei@voltio.no">Kontakt</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Juridisk</h4>
+        <ul>
+          <li><a href="#">Personvernerklæring</a></li>
+          <li><a href="#">Vilkår for bruk</a></li>
+          <li><a href="#">GDPR-informasjon</a></li>
+          <li><a href="#">Sikkerhet</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2025 Voltio AS. Alle rettigheter forbeholdt.</span>
+      <span>Laget med ❤️ i Stavanger, Norge</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── NAV scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ─── Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // ─── Scroll animations (fade-up)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ─── Counter animation
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const duration = 1800;
+    const start = performance.now();
+    const update = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = prefix + current + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.animated) {
+        e.target.dataset.animated = '1';
+        animateCounter(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-number[data-target]').forEach(el => statObserver.observe(el));
+
+  // ─── Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ─── Mockup tone button interaction
+  document.querySelectorAll('.mc-tone-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.mc-tone').querySelectorAll('.mc-tone-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
