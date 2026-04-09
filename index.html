@@ -410,13 +410,93 @@
         }
         .reveal.visible { opacity: 1; transform: translateY(0); }
 
+        /* ── TRUST BAR ── */
+        .trust-bar {
+            position: relative; z-index: 1;
+            padding: 2.5rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--bg2);
+        }
+        .trust-inner {
+            max-width: 900px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            gap: 3rem; flex-wrap: wrap;
+        }
+        .trust-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--text3); flex-shrink: 0;
+        }
+        .trust-logos {
+            display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+        }
+        .trust-logo {
+            font-size: 0.9rem; font-weight: 800;
+            letter-spacing: -0.02em; color: var(--text3);
+            transition: color 0.2s;
+        }
+        .trust-logo:hover { color: var(--text); }
+        .trust-logo .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem; font-weight: 500;
+            background: var(--accent-bg); border: 1px solid var(--accent-border);
+            color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 3px;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            margin-left: 0.4rem; vertical-align: middle;
+        }
+
+        /* ── HAMBURGER / MOBILE MENU ── */
+        .hamburger {
+            display: none;
+            flex-direction: column; justify-content: center; gap: 5px;
+            background: none; border: none; cursor: pointer; padding: 6px;
+        }
+        .hamburger span {
+            display: block; width: 20px; height: 1.5px;
+            background: var(--text); border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+        .mobile-menu {
+            display: none;
+            position: fixed; top: 60px; left: 0; right: 0; z-index: 999;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            flex-direction: column; gap: 0;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            padding: 0.85rem 0;
+            font-size: 1rem; font-weight: 600;
+            color: var(--text); text-decoration: none;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s;
+        }
+        .mobile-menu a:last-child { border-bottom: none; }
+        .mobile-menu a:hover { color: var(--accent); }
+        .mobile-menu .nav-cta-mobile {
+            margin-top: 1rem;
+            background: var(--text); color: var(--bg) !important;
+            padding: 0.85rem 1.5rem; border-radius: 8px;
+            text-align: center; border-bottom: none !important;
+        }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
             .how-grid { grid-template-columns: 1fr; }
             .bento { grid-template-columns: 1fr; }
             .span-7, .span-5, .span-6, .span-4, .span-8, .span-12 { grid-column: span 1; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            nav .nav-links { display: none; }
+            nav .nav-links, nav .nav-cta { display: none; }
+            .hamburger { display: flex; }
+            .trust-inner { gap: 1.5rem; flex-direction: column; text-align: center; }
+            .trust-logos { justify-content: center; gap: 1.5rem; }
         }
     </style>
 </head>
@@ -431,13 +511,23 @@
         <li><a href="#contact">Kontakt</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Ta kontakt →</a>
+    <button class="hamburger" id="hamburger" aria-label="Meny">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#how">Slik fungerer det</a>
+    <a href="#features">Funksjoner</a>
+    <a href="#contact">Kontakt</a>
+    <a href="#contact" class="nav-cta-mobile">Ta kontakt →</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
     <div class="hero-badge">
         <div class="hero-badge-dot"></div>
-        Zendesk-integrasjon
+        Gratis prøveperiode · Tidlig tilgang
     </div>
     <h1 class="hero-title">
         <span class="grad">AI-support</span><br>for kundeservice
@@ -447,10 +537,24 @@
         bedriftens egne løsningsmanualer — i sanntid, for hver eneste ticket.
     </p>
     <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Ta kontakt</a>
+        <a href="#contact" class="btn-primary">Prøv gratis i 14 dager →</a>
         <a href="#how" class="btn-secondary">Se hvordan det fungerer</a>
     </div>
+    <p style="margin-top:1.25rem;font-size:0.8rem;color:var(--text3);animation:fadeUp 0.8s 0.45s ease both;">
+        Ingen kredittkort nødvendig &nbsp;·&nbsp; Oppsett på under 10 minutter &nbsp;·&nbsp; Avbryt når som helst
+    </p>
 </section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+    <div class="trust-inner">
+        <span class="trust-label">Brukt av</span>
+        <div class="trust-logos">
+            <span class="trust-logo">E-Wheels<span class="badge">Prøveperiode</span></span>
+            <span class="trust-logo" style="opacity:0.45">Din bedrift?</span>
+        </div>
+    </div>
+</div>
 
 <!-- HOW IT WORKS -->
 <section class="how-section" id="how">
@@ -541,6 +645,18 @@
                 <div class="code-block">
                     <span class="c-dim">// Eksempel på tagger</span><br>
                     <span class="c-accent">batteri</span> &nbsp;<span class="c-green">motor</span> &nbsp;<span class="c-purple">garanti</span>
+                </div>
+            </div>
+            <div class="bento-card span-6">
+                <span class="bento-tag">Skriveassistent</span>
+                <div class="bento-icon">✏️</div>
+                <h3>Rediger svaret med ett klikk</h3>
+                <p>Etter at Voltio har generert et forslag kan agenten finjustere det uten å skrive om fra bunnen. Fire handlinger tilgjengelig direkte i sidepanelet.</p>
+                <div class="code-block">
+                    <span class="c-accent">Forkort</span> &nbsp;→ kortere, mer direkte svar<br>
+                    <span class="c-green">Utvid</span> &nbsp;&nbsp;&nbsp;→ mer utfyllende forklaring<br>
+                    <span class="c-purple">Korriger</span> → rett grammatikk og flyt<br>
+                    <span class="c-dim">Bullets</span> &nbsp;→ gjør punktliste om til tekst
                 </div>
             </div>
             <div class="bento-card span-6">
@@ -681,9 +797,15 @@
 <!-- CTA -->
 <section class="cta-section" id="contact">
     <div class="section-label reveal" style="justify-content:center;display:flex">// Ta kontakt</div>
-    <h2 class="cta-title reveal">Klar til å effektivisere supporten?</h2>
-    <p class="cta-sub reveal">Vi er i en tidlig fase og ønsker å snakke med butikker som vil teste Voltio. Send oss en e-post — så tar vi en prat.</p>
-    <a href="mailto:hei@voltio.no" class="btn-primary reveal" style="display:inline-flex;margin:0 auto">Send oss en e-post →</a>
+    <h2 class="cta-title reveal">14 dager gratis.<br>Ingen risiko.</h2>
+    <p class="cta-sub reveal">Vi er i en tidlig fase og tar inn et begrenset antall bedrifter for prøveperiode. Send oss en e-post — så setter vi deg opp og hjelper deg i gang.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;" class="reveal">
+        <a href="mailto:hei@voltio.no" class="btn-primary">Start gratis prøveperiode →</a>
+        <a href="mailto:hei@voltio.no" class="btn-secondary">Book en demo</a>
+    </div>
+    <p style="margin-top:1.5rem;font-size:0.8rem;color:var(--text3);" class="reveal">
+        Ingen kredittkort &nbsp;·&nbsp; Oppsett inkludert &nbsp;·&nbsp; Avbryt når som helst
+    </p>
 </section>
 
 <!-- FOOTER -->
@@ -707,6 +829,18 @@
         });
     }, { threshold: 0.08 });
     reveals.forEach(el => observer.observe(el));
+
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+    }));
 
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-links a');

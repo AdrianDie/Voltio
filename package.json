@@ -1,0 +1,17 @@
+{
+  "name": "voltio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "screenshot": "node screenshot.js",
+    "screenshot:full": "node screenshot.js http://localhost:3000 temporary_screenshots/full.png"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "puppeteer": "^24.40.0"
+  }
+}
