@@ -7,17 +7,15 @@ const puppeteer = require('puppeteer');
   await page.goto('http://localhost:3000', { waitUntil: 'networkidle2' });
 
   // Force all fade-up elements visible
-  await page.addStyleTag({ content: '.fade-up { opacity: 1 !important; transform: none !important; }' });
+  await page.addStyleTag({ content: '.fade-up, .reveal { opacity: 1 !important; transform: none !important; }' });
   await new Promise(r => setTimeout(r, 600));
 
   const sections = [
     ['hero', '.hero'],
-    ['logos', '.logos-section'],
-    ['features', '.features-section'],
+    ['trust', '.trust-section'],
     ['how', '.how-section'],
     ['stats', '.stats-section'],
-    ['pricing', '.pricing-section'],
-    ['testimonials', '.testimonials-section'],
+    ['features', '.features-section'],
     ['cta', '.cta-section'],
     ['footer', 'footer'],
   ];
